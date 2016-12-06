@@ -39,7 +39,8 @@ public class WAVLTree {
    * returns -1 if an item with key k already exists in the tree.
    */
    public int insert(int k, String i) {
-	  return 42;	// to be replaced by student code
+
+     
    }
 
   /**
