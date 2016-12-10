@@ -134,23 +134,31 @@ public class WAVLTree {
         private int key;
         private String value;
 
+        // Constructor
+        public WAVLNode() {
+            parent = null;
+            left = null;
+            right = null;
+            differences = new int[2];
+        }
+
         // Setters
-        public void setParent(WAVLNode parent) {}
-        public void setLeft(WAVLNode left) {}
-        public void setRight(WAVLNode right){}
-        public void setLeftDifference(int leftDifference) {}
-        public void setRightDifference(int rightDifference) {}
-        public void setKey(int key) {}
-        public void setValue(String value) {}
+        public void setParent(WAVLNode parent) { this.parent = parent; }
+        public void setLeft(WAVLNode left) { this.left = left; }
+        public void setRight(WAVLNode right){ this.right = right; }
+        public void setRightDifference(int rightDifference) { this.differences[0] = rightDifference; }
+        public void setLeftDifference(int leftDifference) { this.differences[1] = leftDifference; }
+        public void setKey(int key) { this.key = key; }
+        public void setValue(String value) { this.value = value; }
 
         // Getters
-        public WAVLNode getParent() {return null;}
-        public WAVLNode getLeft() {return null;}
-        public WAVLNode getRight() {return null;}
-        public int getLeftDifference() {return 0;}
-        public int getRightDifference() {return 0;}
-        public int getKey() {return 0;}
-        public String getValue() {return null;}
+        public WAVLNode getParent() { return parent; }
+        public WAVLNode getLeft() { return left; }
+        public WAVLNode getRight() { return right; }
+        public int getLeftDifference() { return differences[0]; }
+        public int getRightDifference() { return differences[1]; }
+        public int getKey() { return key; }
+        public String getValue() { return value; }
 
         // Methods
 
@@ -159,16 +167,31 @@ public class WAVLTree {
          *
          * Returns true iff the node is leaf (i.e both it's children are null).
          */
-        public boolean isLeaf() {return false;} // TODO
+        public boolean isLeaf() {
+            return left == null && right == null;
+        }
 
         /**
          * public int whichChild(WAVLNode node)
          *
          * returns 0 if node is right child, 1 if node is left child, otherwise -1.
          * TODO: Decide if null is a child of a leaf and if so what sould be returned,
-         * TODO: or -1 should be returned anyway.
+         * TODO: or -1 should be returned anyway. Will return -1 anyway for now.
          */
-        public int whichChild(WAVLNode node) {return 0;} // TODO
+        public int whichChild(WAVLNode node) {
+            if (node == null) {
+                return -1;
+            }
+            else if (node == left) {
+                return 0;
+            }
+            else if (node == right) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
     }
 }
 
