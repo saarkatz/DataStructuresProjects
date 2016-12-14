@@ -8,12 +8,7 @@
  */
 public class WAVLTree {
     private WAVLNode root;
-    private static final int[] EMPTY_INT_ARRAY = new int[0];
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    private static int SIZE = 0;
-    public static void main(String[] args) {
-
-    }
+    private int numNodes;
 
     /**
      * public WAVLTree()
@@ -21,6 +16,8 @@ public class WAVLTree {
      * Constructor
      */
     public WAVLTree(){
+        root = null;
+        numNodes = 0;
     }
 
     /**
@@ -61,6 +58,7 @@ public class WAVLTree {
         newNode.setRightDifference(1);
         if (root == null) {
             root = newNode;
+            numNodes++;
             return 0;
         }
         WAVLNode node = findInsertionPlace(root, k);
@@ -77,37 +75,41 @@ public class WAVLTree {
             newNode.setParent(node);
             node.setRightDifference(node.getRightDifference() - 1);
         }
-        SIZE++;
+        numNodes++;
+
+        // Rebalance tree;
         int insertCase = insertionCase(node);
+        int rebalancingOperations = 0;
         while (insertCase != 0) {
             switch (insertCase) {
                 case 1:
                     promote(node);
                     node = node.getParent();
+                    rebalancingOperations++;
                     break;
                 case 2: // Case 2 left side
                     rotateRight(node);
                     demote(node);
-                    return 1;
+                    return rebalancingOperations + 2;
                 case 3: // Case 2 right side
                     rotateLeft(node);
                     demote(node);
-                    return 1;
+                    return rebalancingOperations + 2;
                 case 4: // Case 3 left side
                     rotateLeft(node.getLeft()); // Should never throw NullPointerException, if there are no
                                                 // bugs that is.
                     rotateRight(node);
                     demote(node);
-                    return 2;
+                    return rebalancingOperations + 3;
                 case 5:
                     rotateRight(node.getLeft());
                     rotateLeft(node);
                     demote(node);
-                    return 2;
+                    return rebalancingOperations + 3;
             }
             insertCase = insertionCase(node); // Here it's only possible to get from case 1
         }
-        return 0; // If we got here then no rotations where made;
+        return rebalancingOperations; // If we got here then no rotations where made;
     }
 
     /**
@@ -119,6 +121,9 @@ public class WAVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) {
+        if (root == null) {
+            return -1;
+        }
         WAVLNode node = findKey(root, k);
         if (node == null) {
             return -1;
@@ -164,10 +169,9 @@ public class WAVLTree {
                 nodePredecessor.getParent().setChild(nodePredecessor.relationWithParent(), nodePredecessor.getLeft());
             }
         }
-        SIZE--;
+        numNodes--;
 
-        //Rebalance stage
-
+        //Rebalance tree
         int rebalancingOperations = 0;
         node = node.getParent();
         int deleteCase = deletionCase(node);
@@ -248,28 +252,18 @@ public class WAVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        if (root == null) return EMPTY_INT_ARRAY;
-        WAVLNode node = root;
-        while (node.hasRightChild()) { //get node with largest key - an upper bound for the array length
-            node = node.getRight();
+        if (root == null) {
+            return new int[0]; // size() should be 0 at this point;
         }
-        int largestKey = node.getKey();
-        int[] arrTemp = new int[largestKey];
-        node = root;
-        while (node.hasLeftChild()) { //get the node with the smallest key to enter the array first
-            node = node.getLeft();
-        }
-        int cnt = 0; //will grow to be the final array length
-        while (node.getKey() <= largestKey) {
-            arrTemp[cnt] = node.getKey();
+        int[] keys = new int[size()];
+        WAVLNode node = minNode(root);
+        int cnt = 0;
+        while (node != null) {
+            keys[cnt] = node.getKey();
+            node = predecessor(node);
             cnt++;
-            node = predecessor(node); //predecessor of a node is the next to enter the array after the node
         }
-        int[] arr = new int[cnt];
-        for (int i=0 ; i < cnt ; i++) { //copy the temporary array to a new array with compatible size
-            arr[i] = arrTemp[i];
-        }
-        return arr;
+        return keys;
     }
 
     /**
@@ -279,30 +273,19 @@ public class WAVLTree {
      * sorted by their respective keys,
      * or an empty array if the tree is empty.
      */
-    //MAYBE MAKE THIS MUCH SHORTER!!!! JUST NEED TO MAKE SURE SIZE FUNCTION WORKS NICELY (to be removed after testing)
     public String[] infoToArray() {
-        if (root == null) return EMPTY_STRING_ARRAY;
-        WAVLNode node = root;
-        while (node.hasRightChild()) { //get node with largest key - an upper bound for the array length
-            node = node.getRight();
+        if (root == null) {
+            return new String[0]; // size() should be 0 at this point;
         }
-        int largestKey = node.getKey();
-        String[] arrTemp = new String[largestKey];
-        node = root;
-        while (node.hasLeftChild()) { //get the node with the smallest key to enter the array first
-            node = node.getLeft();
-        }
-        int cnt = 0; //will grow to be the final array length
-        while (node.getKey() <= largestKey) {
-            arrTemp[cnt] = node.getValue();
+        String[] values = new String[size()];
+        WAVLNode node = minNode(root);
+        int cnt = 0;
+        while (node != null) {
+            values[cnt] = node.getValue();
+            node = predecessor(node);
             cnt++;
-            node = predecessor(node); //predecessor of a node is the next to enter the array after the node
         }
-        String[] arr = new String[cnt];
-        for (int i=0 ; i < cnt ; i++) { //copy the temporary array to a new array with compatible size
-            arr[i] = arrTemp[i];
-        }
-        return arr;
+        return values;
     }
 
     /**
@@ -314,7 +297,7 @@ public class WAVLTree {
      * postcondition: none
      */
     public int size() { //incremented after insertion and decremented after deletion
-        return SIZE;
+        return numNodes;
     }
 
     /////////////////////////////////// Internal helper functions ////////////////////////////////////
@@ -351,12 +334,6 @@ public class WAVLTree {
         node.getParent().setDifference(relationToParent,
                 node.getParent().getDifference(relationToParent) + 1);
     }
-
-//    /**
-//     * @pre node.relationWithChild(child) == 0 || node.relationWithChild(child) == 1
-//     * @post updates the differences of
-//     */
-//    private static void switchRanks(WAVLNode node, WAVLNode child) TODO delete?
 
     /**
      * rotateRight rotates the node with it's LEFT child.
@@ -493,7 +470,6 @@ public class WAVLTree {
     }
 
     /**
-     * @pre node != null
      * @post Returns the node containing the key k or null if no such node exists, starting with node.
      */
     private static WAVLNode findKey(WAVLNode node, int k) {
@@ -590,7 +566,7 @@ public class WAVLTree {
             }
         }
         // Cases are symmetric iff they return the same value modulo 4
-        if (rightSideIncorrect) {
+        else {
             if (node.getLeftDifference() == 2) {
                 return 5;
             }
@@ -604,8 +580,8 @@ public class WAVLTree {
                 return 8;
             }
         }
+    }
 
-    } // TODO: Implement and comment.
     //////////////////////////////////////////// WAVLNode ////////////////////////////////////////////
     /**
      * public class WAVLNode
@@ -632,6 +608,9 @@ public class WAVLTree {
             left = null;
             right = null;
             differences = new int[2];
+            // A node is always initialized as a leaf
+            differences[0] = 1;
+            differences[1] = 1;
 
             key = k;
             value = i;
