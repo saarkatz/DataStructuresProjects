@@ -8,12 +8,6 @@
  */
 public class WAVLTree {
     private WAVLNode root;
-    private static final int[] EMPTY_INT_ARRAY = new int[0];
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    private static int SIZE = 0;
-    public static void main(String[] args) {
-
-    }
 
     /**
      * public WAVLTree()
@@ -31,7 +25,7 @@ public class WAVLTree {
     public boolean empty() {
         return root == null;
     }
-
+    private int size = 0;
     /**
      * public String search(int k)
      *
@@ -77,7 +71,7 @@ public class WAVLTree {
             newNode.setParent(node);
             node.setRightDifference(node.getRightDifference() - 1);
         }
-        SIZE++;
+        size++;
         int insertCase = insertionCase(node);
         while (insertCase != 0) {
             switch (insertCase) {
@@ -164,8 +158,7 @@ public class WAVLTree {
                 nodePredecessor.getParent().setChild(nodePredecessor.relationWithParent(), nodePredecessor.getLeft());
             }
         }
-        SIZE--;
-
+        size--;
         //Rebalance stage
 
         int rebalancingOperations = 0;
@@ -248,28 +241,23 @@ public class WAVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        if (root == null) return EMPTY_INT_ARRAY;
-        WAVLNode node = root;
-        while (node.hasRightChild()) { //get node with largest key - an upper bound for the array length
-            node = node.getRight();
+        if (root == null) {
+            int[] emptyArray = new int[0];
+            return emptyArray;
         }
-        int largestKey = node.getKey();
-        int[] arrTemp = new int[largestKey];
-        node = root;
+        WAVLNode node = root;
         while (node.hasLeftChild()) { //get the node with the smallest key to enter the array first
             node = node.getLeft();
         }
-        int cnt = 0; //will grow to be the final array length
-        while (node.getKey() <= largestKey) {
-            arrTemp[cnt] = node.getKey();
-            cnt++;
-            node = predecessor(node); //predecessor of a node is the next to enter the array after the node
+        int i = size();
+        int[] keysArray = new int[i];
+        int j = 0;
+        while (j < i) {
+            keysArray[j] = predecessor(node).getKey();
+            node = predecessor(node);
+            j++;
         }
-        int[] arr = new int[cnt];
-        for (int i=0 ; i < cnt ; i++) { //copy the temporary array to a new array with compatible size
-            arr[i] = arrTemp[i];
-        }
-        return arr;
+        return keysArray;
     }
 
     /**
@@ -279,30 +267,25 @@ public class WAVLTree {
      * sorted by their respective keys,
      * or an empty array if the tree is empty.
      */
-    //MAYBE MAKE THIS MUCH SHORTER!!!! JUST NEED TO MAKE SURE SIZE FUNCTION WORKS NICELY (to be removed after testing)
+
     public String[] infoToArray() {
-        if (root == null) return EMPTY_STRING_ARRAY;
-        WAVLNode node = root;
-        while (node.hasRightChild()) { //get node with largest key - an upper bound for the array length
-            node = node.getRight();
+        if (root == null) {
+            String[] emptyArray = new String[0];
+            return emptyArray;
         }
-        int largestKey = node.getKey();
-        String[] arrTemp = new String[largestKey];
-        node = root;
+        WAVLNode node = root;
         while (node.hasLeftChild()) { //get the node with the smallest key to enter the array first
             node = node.getLeft();
         }
-        int cnt = 0; //will grow to be the final array length
-        while (node.getKey() <= largestKey) {
-            arrTemp[cnt] = node.getValue();
-            cnt++;
-            node = predecessor(node); //predecessor of a node is the next to enter the array after the node
+        int i = size();
+        String[] valuesArray = new String[i];
+        int j = 0;
+        while (j < i) {
+            valuesArray[j] = predecessor(node).getValue();
+            node = predecessor(node);
+            j++;
         }
-        String[] arr = new String[cnt];
-        for (int i=0 ; i < cnt ; i++) { //copy the temporary array to a new array with compatible size
-            arr[i] = arrTemp[i];
-        }
-        return arr;
+        return valuesArray;
     }
 
     /**
@@ -313,8 +296,8 @@ public class WAVLTree {
      * precondition: none
      * postcondition: none
      */
-    public int size() { //incremented after insertion and decremented after deletion
-        return SIZE;
+    public int size() {
+        return size;
     }
 
     /////////////////////////////////// Internal helper functions ////////////////////////////////////
@@ -589,7 +572,7 @@ public class WAVLTree {
                 return 4;
             }
         }
-        // Cases are symmetric iff they return the same value modulo 4
+        //cases 1,2,3,4 are symmetric to cases 5,6,7,8 respectively
         if (rightSideIncorrect) {
             if (node.getLeftDifference() == 2) {
                 return 5;
