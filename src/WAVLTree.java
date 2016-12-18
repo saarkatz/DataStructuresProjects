@@ -133,7 +133,7 @@ public class WAVLTree {
         }
         if (node.getParent().getKey() > node.getKey() || !node.hasParent()) { //node has two children (left case)
             WAVLNode nodeSuccessor = successor(node);                         //or is the root. replace it with its
-            node.setKey(nodeSuccessor.getKey());                              //successor
+            node.setKey(nodeSuccessor.getKey());                              //successor.
             node.setValue(nodeSuccessor.getValue());
             if (nodeSuccessor.isLeaf()) {
                 int parentDifference = node.getParent().getDifference(node.relationWithParent());
