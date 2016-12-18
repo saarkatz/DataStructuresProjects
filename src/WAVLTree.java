@@ -54,6 +54,8 @@ public class WAVLTree {
      */
     public int insert(int k, String i) {
         WAVLNode newNode = new WAVLNode(k, i);
+        newNode.setLeftDifference(1);
+        newNode.setRightDifference(1);
         if (root == null) {
             root = newNode;
             numNodes++;
@@ -298,17 +300,6 @@ public class WAVLTree {
         return numNodes;
     }
 
-    /**
-     * Returns a detailed string representing the tree;
-     */
-    @Override
-    public String toString() {
-        if (root == null) {
-            return "[]";
-        }
-        return subtreeToString(root);
-    }
-
     /////////////////////////////////// Internal helper functions ////////////////////////////////////
     /**
      * @pre node != null
@@ -485,10 +476,10 @@ public class WAVLTree {
         if (node.getKey() == k) {
             return node;
         }
-        else if (k < node.getKey() && node.hasLeftChild()) {
+        else if (k > node.getKey() && node.hasLeftChild()) {
             return findKey(node.getLeft(), k);
         }
-        else if (k > node.getKey() && node.hasRightChild()) {
+        else if (k < node.getKey() && node.hasRightChild()) {
             return findKey(node.getRight(), k);
         }
         else {
@@ -536,7 +527,7 @@ public class WAVLTree {
         }
         // At this point we know that it's case 2 or 3, both of which need to know the side.
         else if (leftSideIncorrect) {
-            if (node.getLeft().getRightDifference() == 2) {
+            if (node.getLeft().getRightDifference() == 1) {
                 return 2;
             }
             else {
@@ -544,7 +535,7 @@ public class WAVLTree {
             }
         }
         else {
-            if (node.getRight().getLeftDifference() == 2) {
+            if (node.getRight().getLeftDifference() == 1) {
                 return 3;
             }
             else {
@@ -591,22 +582,6 @@ public class WAVLTree {
         }
     }
 
-    /**
-     * Returns a string representing the structure of the subtree starting at the node.
-     */
-    private static String subtreeToString(WAVLNode node) {
-        if (node == null) {
-            return "";
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("[");
-        stringBuffer.append(subtreeToString(node.getLeft()));
-        stringBuffer.append(node);
-        stringBuffer.append(subtreeToString(node.getRight()));
-        stringBuffer.append("]");
-        return stringBuffer.toString();
-    }
-
     //////////////////////////////////////////// WAVLNode ////////////////////////////////////////////
     /**
      * public class WAVLNode
@@ -645,8 +620,8 @@ public class WAVLTree {
         public void setParent(WAVLNode parent) { this.parent = parent; }
         public void setLeft(WAVLNode left) { this.left = left; }
         public void setRight(WAVLNode right){ this.right = right; }
-        public void setLeftDifference(int leftDifference) { this.differences[0] = leftDifference; }
-        public void setRightDifference(int rightDifference) { this.differences[1] = rightDifference; }
+        public void setRightDifference(int rightDifference) { this.differences[0] = rightDifference; }
+        public void setLeftDifference(int leftDifference) { this.differences[1] = leftDifference; }
         public void setKey(int key) { this.key = key; }
         public void setValue(String value) { this.value = value; }
 
@@ -709,6 +684,8 @@ public class WAVLTree {
          * public int relationWithChild(WAVLNode node)
          *
          * returns 0 if node is right child of this, 1 if node is left child of this, otherwise -1.
+         * TODO: Decide if null is a child of a leaf and if so what sould be returned,
+         * TODO: or -1 should be returned anyway. Will return -1 anyway for now.
          */
         public int relationWithChild(WAVLNode node) {
             if (node == null) {
@@ -723,11 +700,6 @@ public class WAVLTree {
             else {
                 return -1;
             }
-        }
-
-        @Override
-        public String toString() {
-            return String.format("(%1$d,%2$d,%3$d)", differences[0], key, differences[1]);
         }
     }
 }
