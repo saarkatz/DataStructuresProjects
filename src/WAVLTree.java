@@ -551,7 +551,7 @@ public class WAVLTree {
         }
         // At this point we know that it's case 2 or 3, both of which need to know the side.
         else if (leftSideIncorrect) {
-            if (node.getLeft().getRightDifference() == 1) {
+            if (node.getLeft().getLeftDifference() == 1) {
                 return 2;
             }
             else {
@@ -559,7 +559,7 @@ public class WAVLTree {
             }
         }
         else {
-            if (node.getRight().getLeftDifference() == 1) {
+            if (node.getRight().getRightDifference() == 1) {
                 return 3;
             }
             else {
@@ -658,8 +658,8 @@ public class WAVLTree {
         public void setParent(WAVLNode parent) { this.parent = parent; }
         public void setLeft(WAVLNode left) { this.left = left; }
         public void setRight(WAVLNode right){ this.right = right; }
-        public void setRightDifference(int rightDifference) { this.differences[0] = rightDifference; }
-        public void setLeftDifference(int leftDifference) { this.differences[1] = leftDifference; }
+        public void setLeftDifference(int leftDifference) { this.differences[0] = leftDifference; }
+        public void setRightDifference(int rightDifference) { this.differences[1] = rightDifference; }
         public void setKey(int key) { this.key = key; }
         public void setValue(String value) { this.value = value; }
 
