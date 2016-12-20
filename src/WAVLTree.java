@@ -306,6 +306,17 @@ public class WAVLTree {
         return size;
     } //complexity O(1)
 
+    /**
+     * Returns a detailed string representing the tree;
+     */
+    @Override
+    public String toString() {
+        if (root == null) {
+            return "[]";
+        }
+        return subtreeToString(root);
+    }
+
     /////////////////////////////////// Internal helper functions ////////////////////////////////////
     /**
      * @pre node != null
@@ -595,6 +606,23 @@ public class WAVLTree {
         }
 
     } // TODO: Implement and comment.
+
+    /**
+     * Returns a string representing the structure of the subtree starting at the node.
+     */
+    private static String subtreeToString(WAVLNode node) {
+        if (node == null) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("[");
+        stringBuffer.append(subtreeToString(node.getLeft()));
+        stringBuffer.append(node);
+        stringBuffer.append(subtreeToString(node.getRight()));
+        stringBuffer.append("]");
+        return stringBuffer.toString();
+    }
+
     //////////////////////////////////////////// WAVLNode ////////////////////////////////////////////
     /**
      * public class WAVLNode
@@ -712,6 +740,11 @@ public class WAVLTree {
             else {
                 return -1;
             }
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%1$d,%2$d,%3$d)", differences[0], key, differences[1]);
         }
     }
 }
