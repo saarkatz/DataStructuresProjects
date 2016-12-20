@@ -744,7 +744,7 @@ public class WAVLTree {
 
         @Override
         public String toString() {
-            return String.format("(%1$d,%2$d,%3$d)", differences[0], key, differences[1]);
+            return String.format("%1$d,%2$d,%3$d", differences[0], key, differences[1]);
         }
     }
 }
