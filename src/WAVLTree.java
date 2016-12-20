@@ -7,7 +7,7 @@
  *
  */
 public class WAVLTree {
-    private WAVLNode root; // TODO maybe implement getRoot()?
+    private WAVLNode root;
 
     /**
      * public WAVLTree()
@@ -132,8 +132,8 @@ public class WAVLTree {
             }
         }
         if (node.getParent().getKey() > node.getKey() || !node.hasParent()) { //node has two children (left case)
-            WAVLNode nodeSuccessor = successor(node);                         //or is the root. replace it with its
-            node.setKey(nodeSuccessor.getKey());                              //successor.
+            WAVLNode nodeSuccessor = predecessor(node);                         //or is the root. replace it with its
+            node.setKey(nodeSuccessor.getKey());                              //predecessor.
             node.setValue(nodeSuccessor.getValue());
             if (nodeSuccessor.isLeaf()) {
                 int parentDifference = node.getParent().getDifference(node.relationWithParent());
@@ -148,8 +148,8 @@ public class WAVLTree {
             }
         }
         else {
-            WAVLNode nodePredecessor = predecessor(node); //node has two children (right case) replace it with its
-            node.setKey(nodePredecessor.getKey());        //predecessor
+            WAVLNode nodePredecessor = successor(node); //node has two children (right case) replace it with its
+            node.setKey(nodePredecessor.getKey());        //successor
             node.setValue(nodePredecessor.getValue());
             if (nodePredecessor.isLeaf()) {
                 nodePredecessor.getParent().setChild(nodePredecessor.relationWithParent(), null);
@@ -178,7 +178,7 @@ public class WAVLTree {
                     break;
                 case 3:
                     rotateLeft(node);
-                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2) {
+                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2 && node.isLeaf()) {
                         demote(node);
                         return rebalancingOperations + 2;
                     }
@@ -199,7 +199,7 @@ public class WAVLTree {
                     break;
                 case 7:
                     rotateRight(node);
-                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2) {
+                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2 && node.isLeaf()) {
                         demote(node);
                         return rebalancingOperations + 2;
                     }
@@ -246,7 +246,7 @@ public class WAVLTree {
      * Returns a sorted array which contains all keys in the tree,
      * or an empty array if the tree is empty.
      */
-    public int[] keysToArray() { //complexity O(nlogn) TODO maybe can do it better?
+    public int[] keysToArray() { //complexity O(n) TODO maybe can do it better?
         if (root == null) {
             int[] emptyArray = new int[0];
             return emptyArray;
@@ -259,8 +259,8 @@ public class WAVLTree {
         int[] keysArray = new int[i];
         int j = 0;
         while (j < i) {
-            keysArray[j] = predecessor(node).getKey();
-            node = predecessor(node);
+            keysArray[j] = successor(node).getKey();
+            node = successor(node);
             j++;
         }
         return keysArray;
@@ -274,7 +274,7 @@ public class WAVLTree {
      * or an empty array if the tree is empty.
      */
 
-    public String[] infoToArray() { //complexity O(nlogn) TODO maybe can do it better?
+    public String[] infoToArray() { //complexity O(n) TODO maybe can do it better?
         if (root == null) {
             String[] emptyArray = new String[0];
             return emptyArray;
@@ -287,8 +287,8 @@ public class WAVLTree {
         String[] valuesArray = new String[i];
         int j = 0;
         while (j < i) {
-            valuesArray[j] = predecessor(node).getValue();
-            node = predecessor(node);
+            valuesArray[j] = successor(node).getValue();
+            node = successor(node);
             j++;
         }
         return valuesArray;
@@ -420,7 +420,7 @@ public class WAVLTree {
      * @post Returns the node with the smallest key which is larger then node.getKey().
      * @post Returns null if no such node exists (i.e This node is the maximum of the tree).
      */
-    private static WAVLNode predecessor(WAVLNode node) { //complexity O(logn)
+    private static WAVLNode successor(WAVLNode node) { //complexity O(logn)
         if (node.getRight() == null) {
             boolean hasParent = node.getParent() != null;
             boolean isLeftChild = node.relationWithParent() == 0;
@@ -441,7 +441,7 @@ public class WAVLTree {
      * @post Returns the node with the largest key which is smaller then node.getKey().
      * @post Returns null if no such node exists (i.e This node is the minimum of the tree).
      */
-    private static WAVLNode successor(WAVLNode node) { //complexity O(logn)
+    private static WAVLNode predecessor(WAVLNode node) { //complexity O(logn)
         if (node.getLeft() == null) {
             boolean hasParent = node.getParent() != null;
             boolean isRightChild = node.relationWithParent() == 1;
@@ -489,10 +489,10 @@ public class WAVLTree {
         if (node.getKey() == k) {
             return node;
         }
-        else if (k > node.getKey() && node.hasLeftChild()) {
+        else if (k < node.getKey() && node.hasLeftChild()) {
             return findKey(node.getLeft(), k);
         }
-        else if (k < node.getKey() && node.hasRightChild()) {
+        else if (k > node.getKey() && node.hasRightChild()) {
             return findKey(node.getRight(), k);
         }
         else {
@@ -657,7 +657,6 @@ public class WAVLTree {
         public int getKey() { return key; }
         public String getValue() { return value; }
 
-        public WAVLNode getRoot() { return root;}
 
 
         /** @pre side == 0 || side == 1, side is either 0 for left or 1 for right */
