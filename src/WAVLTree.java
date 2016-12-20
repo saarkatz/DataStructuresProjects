@@ -117,6 +117,10 @@ public class WAVLTree {
         if (node == null) {
             return -1;
         }
+        if (node.isLeaf()) {
+            node.getParent().setChild(node.relationWithParent(), null);
+            return 0;
+        }
         if (!(node.hasLeftChild() && node.hasRightChild())) { //if node has only one child overpass it
             int parentDifference = node.getParent().getDifference(node.relationWithParent());
             int nodeDifference = node.getDifference(node.getDifference(node.relationWithParent()));
