@@ -85,20 +85,32 @@ public class WAVLTree {
                 case 2: // Case 2 left side
                     rotateRight(node);
                     demote(node);
+                    if (node == root) {
+                        root = node.getParent();
+                    }
                     return rebalancingOperations + 2;
                 case 3: // Case 2 right side
                     rotateLeft(node);
                     demote(node);
+                    if (node == root) {
+                        root = node.getParent();
+                    }
                     return rebalancingOperations + 2;
                 case 4: // Case 3 left side
                     rotateLeft(node.getLeft());
                     rotateRight(node);
                     demote(node);
+                    if (node == root) {
+                        root = node.getParent();
+                    }
                     return rebalancingOperations + 3;
                 case 5:
-                    rotateRight(node.getLeft());
+                    rotateRight(node.getRight());
                     rotateLeft(node);
                     demote(node);
+                    if (node == root) {
+                        root = node.getParent();
+                    }
                     return rebalancingOperations + 3;
             }
             insertCase = insertionCase(node); // Here it's only possible to get from case 1
@@ -358,8 +370,9 @@ public class WAVLTree {
      * @pre node != null
      * @pre node.hasLeftChild()
      * @post Rotates node with it's left child
+     * @post Returns the other node in the rotation.
      */
-    private static void rotateRight(WAVLNode node) { // Complexity O(1)
+    private static WAVLNode rotateRight(WAVLNode node) { // Complexity O(1)
         WAVLNode leftChild = node.getLeft(); // Keep left child
 
         int rightDifference = node.getRightDifference();
@@ -382,8 +395,11 @@ public class WAVLTree {
         
         // Change this node to be right child of left child
         leftChild.setRight(node);
-        if (node.hasParent()) { node.getParent().setChild(node.relationWithParent(),leftChild); }
+        if (node.hasParent()) {
+            node.getParent().setChild(node.relationWithParent(), leftChild);
+        }
         node.setParent(leftChild); // Here this node's parent is being changed so this must come last.
+        return leftChild;
     }
 
     /**
@@ -392,8 +408,9 @@ public class WAVLTree {
      * @pre node != null
      * @pre node.hasRightChild()
      * @post Rotates node with it's right child
+     * @post Returns the other node in the rotation.
      */
-    private static void rotateLeft(WAVLNode node) { // Complexity O(1)
+    private static WAVLNode rotateLeft(WAVLNode node) { // Complexity O(1)
         WAVLNode rightChild = node.getRight(); // Keep right child
 
         int leftDifference = node.getLeftDifference();
@@ -416,8 +433,11 @@ public class WAVLTree {
 
         // Change this node to be left child of right child
         rightChild.setLeft(node);
-        if (node.hasParent()) { node.getParent().setChild(node.relationWithParent(),rightChild); }
+        if (node.hasParent()) {
+            node.getParent().setChild(node.relationWithParent(), rightChild);
+        }
         node.setParent(rightChild); // Here this node's parent is being changed so this must come last.
+        return rightChild;
     }
 
     /**
