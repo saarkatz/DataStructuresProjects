@@ -34,10 +34,10 @@ public class TestTree {
         TestInsert(tree, 17, 1, "[[2,15,1[1,17,1]]1,20,2[1,30,1]]");
         TestDelete(tree, 30, 3, "[[1,15,1]2,17,2[1,20,1]]"); // Case 4
         TestDelete(tree, 15, 1, "[2,17,1[1,20,1]]"); // Case 1
-        TestDelete(tree, 15, 1, "[1,20,1]"); // Case 1
-        TestDelete(tree, 15, 0, "[1,20,1]"); // Delete a node that does not exists.
+        TestDelete(tree, 17, 1, "[1,20,1]"); // Case 1
+        TestDelete(tree, 15, -1, "[1,20,1]"); // Delete a node that does not exists.
         TestDelete(tree, 20, 0, "[]"); // Delete last node.
-        TestDelete(tree, 20, 0, "[]"); // Delete when root is null;
+        TestDelete(tree, 20, -1, "[]"); // Delete when root is null;
         EndTestSuite();
 
         StartTestSuite("Insert 2");
@@ -56,14 +56,14 @@ public class TestTree {
         StartTestSuite("Delete 2");
         TestDelete(tree, 35, 0, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,1[[1,45,1]1,50,1[1,55,1]]]]");
         TestDelete(tree, 50, 0, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,1[[1,45,1]1,55,2]]]");
-        TestDelete(tree, 45, 0, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,2[1,55,1]]]");
+        TestDelete(tree, 45, 1, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,2[1,55,1]]]");
         TestDelete(tree, 10, 3, "[[1,20,1]2,30,1[[1,32,1]1,40,1[1,55,1]]]"); // Case 2
         TestDelete(tree, 32, 0, "[[1,20,1]2,30,1[2,40,1[1,55,1]]]");
         TestDelete(tree, 20, 2, "[[1,30,1]2,40,2[1,55,1]]"); // Case 3
         TestInsert(tree, 47, 1, "[[1,30,1]2,40,1[[1,47,1]1,55,2]]");
         TestDelete(tree, 30, 3, "[[1,40,1]2,47,2[1,55,1]]"); // Case 4
-        TestDelete(tree, 55, 3, "[[1,40,1]1,47,2]"); // Case 1
-        TestDelete(tree, 47, 3, "[1,40,1]"); // Case 1);
+        TestDelete(tree, 55, 1, "[[1,40,1]1,47,2]"); // Case 1
+        TestDelete(tree, 47, 1, "[1,40,1]"); // Case 1);
         EndTestSuite();
         System.out.println("Done!");
     }

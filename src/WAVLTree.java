@@ -1,3 +1,4 @@
+
 /**
  *
  * WAVLTree
@@ -56,6 +57,7 @@ public class WAVLTree {
         WAVLNode newNode = new WAVLNode(k, i);
         if (root == null) {
             root = newNode;
+            size++;
             return 0;
         }
         WAVLNode node = findInsertionPlace(root, k);
@@ -127,65 +129,74 @@ public class WAVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) { // Complexity O(logn)
-        WAVLNode node = findKey(root, k);
-        if (node == null) {
+        if (root == null) {
             return -1;
         }
-        if (node.isLeaf()) {
-            node.getParent().setDifference(node.relationWithParent(), node.getParent().getRightDifference() + 1);
-            node.getParent().setChild(node.relationWithParent(), null);
-            return 0;
-        }
-        if (!(node.hasLeftChild() && node.hasRightChild())) { //If node has only one child overpass it
-            int parentDifference = node.getParent().getDifference(node.relationWithParent());
-            if (node.hasLeftChild()) { //Has only left child
-                node.getParent().setDifference(node.relationWithParent(), parentDifference + node.getLeftDifference());
-                node.getParent().setChild(node.relationWithParent(), node.getLeft());
-                node.getLeft().setParent(node.getParent());
+        WAVLNode node = findKey(root, k);
+        WAVLNode nodeToBalance;
+        while (true) {
+            if (node == null) {
+                return -1;
             }
-            else { //Has only right child
-                node.getParent().setDifference(node.relationWithParent(), parentDifference + node.getRightDifference());
-                node.getParent().setChild(node.relationWithParent(), node.getRight());
-                node.getRight().setParent(node.getParent());
+            if (size() == 1) {
+                root = null;
+                return 0;
             }
-        }
-        else if (node.getParent().getKey() > node.getKey() || !node.hasParent()) { //node has two children (left case)
-            WAVLNode nodePredecessor = predecessor(node);                       //or is the root. replace it with its
-            node.setKey(nodePredecessor.getKey());                              //predecessor.
-            node.setValue(nodePredecessor.getValue());
-            if (nodePredecessor.isLeaf()) {
-                int parentDifference = node.getParent().getDifference(node.relationWithParent());
-                nodePredecessor.getParent().setDifference(nodePredecessor.relationWithParent(), parentDifference + 1);
-                nodePredecessor.getParent().setChild(nodePredecessor.relationWithParent(), null);
+            if (node.isLeaf()) {
+                node.getParent().setDifference(node.relationWithParent(),
+                        node.getParent().getDifference(node.relationWithParent()) + 1);
+                nodeToBalance = node.getParent();
+                nodeToBalance.setChild(node.relationWithParent(), null);
+                break;
+            }
+            if (!node.hasParent()) {
+                if (node.hasLeftChild()) {
+                    node.setKey(node.getLeft().getKey());
+                    node.setValue(node.getLeft().getValue());
+                    root = node;
+                    node = node.getLeft();
+                }
+                else {
+                    node.setKey(node.getRight().getKey());
+                    node.setValue(node.getRight().getValue());
+                    root = node;
+                    node = node.getRight();
+                }
+            }
+            else if (!(node.hasLeftChild() && node.hasRightChild())) { //If node has only one child overpass it
+                nodeToBalance = node.getParent();
+                if (node.hasLeftChild()) { //Has only left child
+                    nodeToBalance.setDifference(node.relationWithParent(),
+                            nodeToBalance.getDifference(node.relationWithParent()) + node.getLeftDifference());
+                    nodeToBalance.setChild(node.relationWithParent(), node.getLeft());
+                    node.getLeft().setParent(node.getParent());
+                }
+                else { //Has only right child
+                    nodeToBalance.setDifference(node.relationWithParent(),
+                            nodeToBalance.getDifference(node.relationWithParent()) + node.getRightDifference());
+                    nodeToBalance.setChild(node.relationWithParent(), node.getRight());
+                    node.getRight().setParent(node.getParent());
+                }
+                break;
+            }
+            else if (node.getKey() < node.getParent().getKey()) {
+                //node has two children (left case). replace it with its predecessor.
+                node.setKey(predecessor(node).getKey());
+                node.setValue(predecessor(node).getValue());
+                node = predecessor(node);
             }
             else {
-                int parentDifference = node.getParent().getDifference(node.relationWithParent());
-                int nodeDifference = node.getDifference(node.getDifference(node.relationWithParent()));
-                nodePredecessor.getParent().setDifference(nodePredecessor.relationWithParent(), parentDifference + nodeDifference);
-                nodePredecessor.getParent().setChild(nodePredecessor.relationWithParent(), nodePredecessor.getRight());
-            }
-        }
-        else {
-            WAVLNode nodeSuccessor = successor(node); //node has two children (right case) replace it with its
-            node.setKey(nodeSuccessor.getKey());      //successor
-            node.setValue(nodeSuccessor.getValue());
-            if (nodeSuccessor.isLeaf()) {
-                int parentDifference = node.getParent().getDifference(node.relationWithParent());
-                nodeSuccessor.getParent().setDifference(nodeSuccessor.relationWithParent(), parentDifference + 1);
-                nodeSuccessor.getParent().setChild(nodeSuccessor.relationWithParent(), null);
-            }
-            else {
-                int parentDifference = node.getParent().getDifference(node.relationWithParent());
-                int nodeDifference = node.getDifference(node.getDifference(node.relationWithParent()));
-                nodeSuccessor.getParent().setDifference(nodeSuccessor.relationWithParent(), parentDifference + nodeDifference);
-                nodeSuccessor.getParent().setChild(nodeSuccessor.relationWithParent(), nodeSuccessor.getLeft());
+                //node has two children (left case). replace it with its successor.
+                node.setKey(successor(node).getKey());
+                node.setValue(successor(node).getValue());
+                node = successor(node);
             }
         }
         size--;
         //Rebalance stage
 
         int rebalancingOperations = 0; //TODO return nothing in switch scope for safety?
-        node = node.getParent();
+        node = nodeToBalance;
         int deleteCase = deletionCase(node);
         while (deleteCase != 0) {
             switch (deleteCase) {
@@ -197,19 +208,24 @@ public class WAVLTree {
                 case 2:
                     demote(node);
                     demote(node.getRight());
+                    node = node.getParent();
                     rebalancingOperations += 2;
                     break;
                 case 3:
                     rotateLeft(node);
-                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2 && node.isLeaf()) {
-                        demote(node);
-                        return rebalancingOperations + 2;
+                    rebalancingOperations++;
+                    if (node == root) {
+                        root = node.getParent();
                     }
-                    return rebalancingOperations + 1;
+                    break;
                 case 4:
+                    rotateRight(node.getRight());
                     rotateLeft(node);
-                    rotateLeft(node);
-                    return rebalancingOperations + 2;
+                    if (node == root) {
+                        root = node.getParent();
+                    }
+                    rebalancingOperations += 2;
+                    break;
                 case 5:
                     demote(node);
                     node = node.getParent();
@@ -218,19 +234,24 @@ public class WAVLTree {
                 case 6:
                     demote(node);
                     demote(node.getLeft());
+                    node = node.getParent();
                     rebalancingOperations += 2;
                     break;
                 case 7:
                     rotateRight(node);
-                    if (node.getLeftDifference() == 2 && node.getRightDifference() == 2 && node.isLeaf()) {
-                        demote(node);
-                        return rebalancingOperations + 2;
+                    if (node == root) {
+                        root = node.getParent();
                     }
-                    return rebalancingOperations + 1;
+                    rebalancingOperations++;
+                    break;
                 case 8:
+                    rotateLeft(node.getLeft());
                     rotateRight(node);
-                    rotateRight(node);
-                    return rebalancingOperations + 2;
+                    if (node == root) {
+                        root = node.getParent();
+                    }
+                    rebalancingOperations += 2;
+                    break;
             }
             deleteCase = deletionCase(node); // Here it's only possible to get from case 1
         }
@@ -588,18 +609,21 @@ public class WAVLTree {
         if (node == null) return 0;
         boolean leftSideIncorrect = node.getLeftDifference() == 3;
         boolean rightSideIncorrect = node.getRightDifference() == 3;
-        if (node.isLeaf() || !(leftSideIncorrect || rightSideIncorrect)) {
+        if (node.isLeaf() && node.getLeftDifference() == 2 && node.getRightDifference() == 2) {
+            return 1;
+        }
+        if (!(leftSideIncorrect || rightSideIncorrect)) {
             return 0; // Everything is correct
         }
         if (leftSideIncorrect) {
             if (node.getRightDifference() == 2) {
                 return 1;
             }
+            else if (node.getRight().getLeftDifference() == 2 && node.getRight().getRightDifference() == 2) {
+                return 2;
+            }
             else if (node.getRight().getRightDifference() == 1) {
                 return 3;
-            }
-            else if (node.getRight().getLeftDifference() == 2) {
-                return 2;
             }
             else {
                 return 4;
@@ -610,11 +634,11 @@ public class WAVLTree {
             if (node.getLeftDifference() == 2) {
                 return 5;
             }
+            else if (node.getLeft().getRightDifference() == 2 && node.getLeft().getLeftDifference() == 2) {
+                return 6;
+            }
             else if (node.getLeft().getLeftDifference() == 1) {
                 return 7;
-            }
-            else if (node.getLeft().getRightDifference() == 2) {
-                return 6;
             }
             else {
                 return 8;
