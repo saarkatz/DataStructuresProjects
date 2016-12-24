@@ -296,10 +296,10 @@ public class WAVLTree {
             return  new int[0];
         }
         WAVLNode node = minNode(root);
-        int length= size();
+        int length = size();
         int[] keysArray = new int[length];
         for (int i = 0; i < length; i++){
-            keysArray[i] = successor(node).getKey();
+            keysArray[i] = node.getKey();
             node = successor(node);
         }
         return keysArray;
@@ -320,7 +320,7 @@ public class WAVLTree {
         int length = size();
         String[] valuesArray = new String[length];
         for (int i = 0; i < length; i++) {
-            valuesArray[i] = successor(node).getValue();
+            valuesArray[i] = node.getValue();
             node = successor(node);
         }
         return valuesArray;

@@ -13,7 +13,9 @@ public class TestTree {
     public static void main(String[] args) {
         StartTestSuite("Insert 1");
         WAVLTree tree = new WAVLTree();
+        TestSize(tree, 0);
         TestInsert(tree, 10, 0, "[1,10,1]");
+        TestSize(tree, 1);
         TestInsert(tree, 20, 1, "[2,10,1[1,20,1]]"); // Case 1
         TestInsert(tree, 30, 3, "[[1,10,1]1,20,1[1,30,1]]"); // Case 2
         TestInsert(tree, 40, 2, "[[1,10,1]2,20,1[2,30,1[1,40,1]]]"); // Case 1
@@ -22,27 +24,35 @@ public class TestTree {
         TestInsert(tree,  5, 3, "[[[[1,5,1]1,10,2]1,20,2[1,25,1]]1,30,2[2,40,1[1,50,1]]]"); // Case 1
         TestInsert(tree, 15, 0, "[[[[1,5,1]1,10,1[1,15,1]]1,20,2[1,25,1]]1,30,2[2,40,1[1,50,1]]]");
         TestInsert(tree, 27, 1, "[[[[1,5,1]1,10,1[1,15,1]]1,20,1[2,25,1[1,27,1]]]1,30,2[2,40,1[1,50,1]]]"); // Case 1
+        TestSize(tree, 9);
         EndTestSuite();
 
         StartTestSuite("Delete 1");
         TestDelete(tree, 25, 0, "[[[[1,5,1]1,10,1[1,15,1]]1,20,2[1,27,1]]1,30,2[2,40,1[1,50,1]]]");
+        TestSize(tree, 8);
         TestDelete(tree, 10, 0, "[[[2,5,1[1,15,1]]1,20,2[1,27,1]]1,30,2[2,40,1[1,50,1]]]");
         TestDelete(tree,  5, 0, "[[[1,15,1]2,20,2[1,27,1]]1,30,2[2,40,1[1,50,1]]]");
         TestDelete(tree, 50, 3, "[[[1,15,1]1,20,1[1,27,1]]1,30,2[1,40,1]]"); // Case 2
         TestDelete(tree, 27, 0, "[[[1,15,1]1,20,2]1,30,2[1,40,1]]");
         TestDelete(tree, 40, 2, "[[1,15,1]2,20,2[1,30,1]]"); // Case 3
+        TestSize(tree, 3);
         TestInsert(tree, 17, 1, "[[2,15,1[1,17,1]]1,20,2[1,30,1]]");
         TestDelete(tree, 30, 3, "[[1,15,1]2,17,2[1,20,1]]"); // Case 4
         TestDelete(tree, 15, 1, "[2,17,1[1,20,1]]"); // Case 1
         TestDelete(tree, 17, 1, "[1,20,1]"); // Case 1
+        TestSize(tree, 1);
         TestDelete(tree, 15, -1, "[1,20,1]"); // Delete a node that does not exists.
+        TestSize(tree, 1);
         TestDelete(tree, 20, 0, "[]"); // Delete last node.
+        TestSize(tree, 0);
         TestDelete(tree, 20, -1, "[]"); // Delete when root is null;
+        TestSize(tree, 0);
         EndTestSuite();
 
         StartTestSuite("Insert 2");
         tree = new WAVLTree();
         TestInsert(tree, 50, 0, "[1,50,1]");
+        TestSize(tree, 1);
         TestInsert(tree, 40, 1, "[[1,40,1]1,50,2]"); // Case 1
         TestInsert(tree, 30, 3, "[[1,30,1]1,40,1[1,50,1]]"); // Case 2
         TestInsert(tree, 20, 2, "[[[1,20,1]1,30,2]1,40,2[1,50,1]]"); // Case 1
@@ -51,20 +61,25 @@ public class TestTree {
         TestInsert(tree, 55, 3, "[[[1,10,1]1,20,2]2,30,1[[1,35,1]2,40,1[2,50,1[1,55,1]]]]"); // Case 1
         TestInsert(tree, 45, 0, "[[[1,10,1]1,20,2]2,30,1[[1,35,1]2,40,1[[1,45,1]1,50,1[1,55,1]]]]");
         TestInsert(tree, 32, 1, "[[[1,10,1]1,20,2]2,30,1[[[1,32,1]1,35,2]1,40,1[[1,45,1]1,50,1[1,55,1]]]]"); // Case 1
+        TestSize(tree, 9);
         EndTestSuite();
 
         StartTestSuite("Delete 2");
         TestDelete(tree, 35, 0, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,1[[1,45,1]1,50,1[1,55,1]]]]");
+        TestSize(tree, 8);
         TestDelete(tree, 50, 0, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,1[[1,45,1]1,55,2]]]");
         TestDelete(tree, 45, 1, "[[[1,10,1]1,20,2]2,30,1[[1,32,1]2,40,2[1,55,1]]]");
         TestDelete(tree, 10, 3, "[[1,20,1]2,30,1[[1,32,1]1,40,1[1,55,1]]]"); // Case 2
         TestDelete(tree, 32, 0, "[[1,20,1]2,30,1[2,40,1[1,55,1]]]");
         TestDelete(tree, 20, 2, "[[1,30,1]2,40,2[1,55,1]]"); // Case 3
+        TestSize(tree, 3);
         TestInsert(tree, 47, 1, "[[1,30,1]2,40,1[[1,47,1]1,55,2]]");
         TestDelete(tree, 30, 3, "[[1,40,1]2,47,2[1,55,1]]"); // Case 4
         TestDelete(tree, 55, 1, "[[1,40,1]1,47,2]"); // Case 1
         TestDelete(tree, 47, 1, "[1,40,1]"); // Case 1);
+        TestSize(tree, 1);
         EndTestSuite();
+
         System.out.println("Done!");
     }
 
@@ -84,6 +99,20 @@ public class TestTree {
         }
     }
 
+    static void TestSize(WAVLTree tree, int expected) {
+        if (testSuiteAborted) {
+            return;
+        }
+        StringBuilder message = new StringBuilder();
+        if (!isValueCorrect(Level.WARNING, "Tree size", "size()", expected, tree.size(), message)) {
+            if (!testSuiteFailed) {
+                System.out.print(testSuiteName + ":");
+                testSuiteFailed = true;
+            }
+            System.out.println(message);
+        }
+    }
+
     static void TestInsert(WAVLTree tree, int key, int rebalancingOperations, String expected) {
         TestInsert(tree, key, rebalancingOperations, expected, false);
     }
@@ -96,7 +125,7 @@ public class TestTree {
         boolean failed = false;
         int numOperations;
         try {
-            numOperations = tree.insert(key, "");
+            numOperations = tree.insert(key, String.valueOf(key));
         }
         catch (RuntimeException rte) {
             if (!testSuiteFailed) {
