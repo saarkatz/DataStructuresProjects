@@ -134,68 +134,69 @@ public class WAVLTree {
         }
         WAVLNode node = findKey(root, k);
         WAVLNode nodeToBalance;
-        while (true) {
-            if (node == null) {
-                return -1;
+        if (node == null) {
+            return -1;
+        }
+        if (size() == 1) {
+            root = null;
+            size--;
+            return 0;
+        }
+        if (!node.hasParent()) {
+            // If node is root, replace its fields with one of its children's fields
+            // (by this stage he must have at least one) and continue the delete process with the chosen child.
+            if (node.hasLeftChild()) {
+                node.setKey(node.getLeft().getKey());
+                node.setValue(node.getLeft().getValue());
+                node = node.getLeft();
             }
-            if (size() == 1) {
-                root = null;
-                return 0;
+            else {
+                node.setKey(node.getRight().getKey());
+                node.setValue(node.getRight().getValue());
+                node = node.getRight();
             }
-            if (node.isLeaf()) {
-                node.getParent().setDifference(node.relationWithParent(),
-                        node.getParent().getDifference(node.relationWithParent()) + 1);
-                nodeToBalance = node.getParent();
-                nodeToBalance.setChild(node.relationWithParent(), null);
-                break;
-            }
-            if (!node.hasParent()) {
-                if (node.hasLeftChild()) {
-                    node.setKey(node.getLeft().getKey());
-                    node.setValue(node.getLeft().getValue());
-                    root = node;
-                    node = node.getLeft();
-                }
-                else {
-                    node.setKey(node.getRight().getKey());
-                    node.setValue(node.getRight().getValue());
-                    root = node;
-                    node = node.getRight();
-                }
-            }
-            else if (!(node.hasLeftChild() && node.hasRightChild())) { //If node has only one child overpass it
-                nodeToBalance = node.getParent();
-                if (node.hasLeftChild()) { //Has only left child
-                    nodeToBalance.setDifference(node.relationWithParent(),
-                            nodeToBalance.getDifference(node.relationWithParent()) + node.getLeftDifference());
-                    nodeToBalance.setChild(node.relationWithParent(), node.getLeft());
-                    node.getLeft().setParent(node.getParent());
-                }
-                else { //Has only right child
-                    nodeToBalance.setDifference(node.relationWithParent(),
-                            nodeToBalance.getDifference(node.relationWithParent()) + node.getRightDifference());
-                    nodeToBalance.setChild(node.relationWithParent(), node.getRight());
-                    node.getRight().setParent(node.getParent());
-                }
-                break;
-            }
-            else if (node.getKey() < node.getParent().getKey()) {
-                //node has two children (left case). replace it with its predecessor.
+        }
+        if (node.hasLeftChild() && node.hasRightChild()) {
+            //If node has two children, replace its fields with its predecessor's/successor's fields
+            //And continue the delete process with the predecessor/successor (respectively).
+            if (node.getKey() < node.getParent().getKey()) {
                 node.setKey(predecessor(node).getKey());
                 node.setValue(predecessor(node).getValue());
                 node = predecessor(node);
             }
             else {
-                //node has two children (left case). replace it with its successor.
                 node.setKey(successor(node).getKey());
                 node.setValue(successor(node).getValue());
                 node = successor(node);
             }
         }
+        if (node.isLeaf()) {
+            //If node is a leaf, delete the node and update differences.
+            node.getParent().setDifference(node.relationWithParent(),
+                    node.getParent().getDifference(node.relationWithParent()) + 1);
+            nodeToBalance = node.getParent();
+            nodeToBalance.setChild(node.relationWithParent(), null);
+        }
+        else {
+            //If node has exactly one child, delete the node and connect his parent to his child
+            nodeToBalance = node.getParent();
+            if (node.hasLeftChild()) {
+                nodeToBalance.setDifference(node.relationWithParent(),
+                        nodeToBalance.getDifference(node.relationWithParent()) + node.getLeftDifference());
+                nodeToBalance.setChild(node.relationWithParent(), node.getLeft());
+                node.getLeft().setParent(node.getParent());
+            }
+            else {
+                nodeToBalance.setDifference(node.relationWithParent(),
+                        nodeToBalance.getDifference(node.relationWithParent()) + node.getRightDifference());
+                nodeToBalance.setChild(node.relationWithParent(), node.getRight());
+                node.getRight().setParent(node.getParent());
+            }
+        }
         size--;
         //Rebalance stage
 
-        int rebalancingOperations = 0; //TODO return nothing in switch scope for safety?
+        int rebalancingOperations = 0;
         node = nodeToBalance;
         int deleteCase = deletionCase(node);
         while (deleteCase != 0) {
@@ -253,9 +254,9 @@ public class WAVLTree {
                     rebalancingOperations += 2;
                     break;
             }
-            deleteCase = deletionCase(node); // Here it's only possible to get from case 1
+            deleteCase = deletionCase(node);
         }
-        return rebalancingOperations; // If we got here then no rebalancing operations were made;
+        return rebalancingOperations;
     }
 
     /**
@@ -604,7 +605,14 @@ public class WAVLTree {
             }
         }
     }
-
+    /**
+     * @post Returns the deletion case of the node
+     *  0   - No further changes should be made.
+     *  1/5 - Demotion required, left/right.
+     *  2/6 - Double demotion required, left/right.
+     *  3/7 - Rotation required, left/right.
+     *  4/8 - Double rotation required, left/right.
+     */
     private static int deletionCase(WAVLNode node) { // Complexity O(1)
         if (node == null) return 0;
         boolean leftSideIncorrect = node.getLeftDifference() == 3;
