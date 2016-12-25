@@ -168,7 +168,7 @@ public class WAVLTree {
                 node = predecessorNode;
             }
             else {
-                WAVLNode successorNode = successor(node)
+                WAVLNode successorNode = successor(node);
                 node.setKey(successorNode.getKey());
                 node.setValue(successorNode.getValue());
                 node = successorNode;
