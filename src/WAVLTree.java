@@ -474,6 +474,12 @@ public class WAVLTree {
             if (hasParent && isLeftChild) {
                 return node.getParent();
             }
+            else if (hasParent && !isLeftChild) {
+                while (node.relationWithParent() == 1) {
+                    node = node.getParent();
+                }
+                return node.getParent();
+            }
             else {
                 return null;
             }
@@ -493,6 +499,12 @@ public class WAVLTree {
             boolean hasParent = node.getParent() != null;
             boolean isRightChild = node.relationWithParent() == 1;
             if (hasParent && isRightChild) {
+                return node.getParent();
+            }
+            else if (hasParent && !isRightChild) {
+                while (node.relationWithParent() == 0) {
+                    node = node.getParent();
+                }
                 return node.getParent();
             }
             else {
