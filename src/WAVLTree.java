@@ -628,8 +628,8 @@ public class WAVLTree {
      *  0   - No further changes should be made.
      *  1   - Demotion required.
      *  2/3 - Double demotion required.
-     *  4/5 - Rotation required.
-     *  6/7 - Double rotation required.
+     *  4/5 - Rotation required. left/right
+     *  6/7 - Double rotation required, right-left/left-right
      */
     // Complexity O(1)
     private static int deletionCase(WAVLNode node) {
