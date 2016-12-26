@@ -159,8 +159,6 @@ public class WAVLTree {
         }
         if (size() == 1) {
             root = null;
-            minNode = null;
-            maxNode = null;
             size--;
             return 0;
         }
@@ -278,7 +276,7 @@ public class WAVLTree {
      */
     // Complexity O(1)
     public String min() {
-        if (root == null) {
+        if (minNode == null) {
             return null;
         }
         return minNode.getValue();
@@ -292,7 +290,7 @@ public class WAVLTree {
      */
     // Complexity O(1)
     public String max() {
-        if (root == null) {
+        if (maxNode == null) {
             return null;
         }
         return maxNode.getValue();
