@@ -217,48 +217,35 @@ public class WAVLTree {
                     rebalanceOperations += 2;
                     break;
                 case 3:
-                    rotateLeft(node);
-                    rebalanceOperations++;
-                    if (node == root) {
-                        root = node.getParent();
-                    }
-                    break;
-                case 4:
-                    rotateRight(node.getRight());
-                    rotateLeft(node);
-                    if (node == root) {
-                        root = node.getParent();
-                    }
-                    rebalanceOperations += 2;
-                    break;
-                case 5:
-                    demote(node);
-                    node = node.getParent();
-                    rebalanceOperations++;
-                    break;
-                case 6:
                     demote(node);
                     demote(node.getLeft());
                     node = node.getParent();
                     rebalanceOperations += 2;
                     break;
-                case 7:
-                    rotateRight(node);
-                    if (node == root) {
-                        root = node.getParent();
-                    }
+                case 4:
+                    rotateLeft(node);
                     rebalanceOperations++;
                     break;
-                case 8:
+                case 5:
+                    rotateRight(node);
+                    rebalanceOperations++;
+                    break;
+                case 6:
+                    rotateRight(node.getRight());
+                    rotateLeft(node);
+                    rebalanceOperations += 2;
+                    break;
+                case 7:
                     rotateLeft(node.getLeft());
                     rotateRight(node);
-                    if (node == root) {
-                        root = node.getParent();
-                    }
                     rebalanceOperations += 2;
                     break;
             }
             deleteCase = deletionCase(node);
+        }
+        // If a rotation moved the root away from the top, fix it.
+        if (root.hasParent()) {
+            root = root.getParent();
         }
         return rebalanceOperations;
     }
@@ -552,7 +539,8 @@ public class WAVLTree {
      * #post Returns the largest node of the subtree beginning in node (i.e The right most node).
      */
     // Complexity O(logn)
-    private static WAVLNode maxNode(WAVLNode node) {
+    @NotNull
+    private static WAVLNode maxNode(@NotNull WAVLNode node) {
         if (node.getRight() == null) {
             return node;
         }
@@ -642,12 +630,13 @@ public class WAVLTree {
     /**
      * #post Returns the deletion case of the node
      *  0   - No further changes should be made.
-     *  1/5 - Demotion required, left/right.
-     *  2/6 - Double demotion required, left/right.
-     *  3/7 - Rotation required, left/right.
-     *  4/8 - Double rotation required, left/right.
+     *  1   - Demotion required, left/right.
+     *  2/3 - Double demotion required, left/right.
+     *  4/5 - Rotation required, left/right.
+     *  6/7 - Double rotation required, left/right.
      */
-    private static int deletionCase(WAVLNode node) { // Complexity O(1)
+    // Complexity O(1)
+    private static int deletionCase(WAVLNode node) {
         if (node == null) return 0;
         boolean leftSideIncorrect = node.getLeftDifference() == 3;
         boolean rightSideIncorrect = node.getRightDifference() == 3;
@@ -657,33 +646,30 @@ public class WAVLTree {
         if (!(leftSideIncorrect || rightSideIncorrect)) {
             return 0; // Everything is correct
         }
+        // At this point we know there is a problem.
+        if (node.getLeftDifference() == 2 || node.getRightDifference() == 2) {
+            return 1;
+        }
         if (leftSideIncorrect) {
-            if (node.getRightDifference() == 2) {
-                return 1;
-            }
-            else if (node.getRight().getLeftDifference() == 2 && node.getRight().getRightDifference() == 2) {
+            if (node.getRight().getLeftDifference() == 2 && node.getRight().getRightDifference() == 2) {
                 return 2;
             }
             else if (node.getRight().getRightDifference() == 1) {
-                return 3;
-            }
-            else {
                 return 4;
             }
-        }
-        //cases 1,2,3,4 are symmetric to cases 5,6,7,8 respectively
-        else {
-            if (node.getLeftDifference() == 2) {
-                return 5;
-            }
-            else if (node.getLeft().getRightDifference() == 2 && node.getLeft().getLeftDifference() == 2) {
+            else {
                 return 6;
             }
+        }
+        else {
+            if (node.getLeft().getRightDifference() == 2 && node.getLeft().getLeftDifference() == 2) {
+                return 3;
+            }
             else if (node.getLeft().getLeftDifference() == 1) {
-                return 7;
+                return 5;
             }
             else {
-                return 8;
+                return 7;
             }
         }
 
