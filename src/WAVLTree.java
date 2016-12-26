@@ -11,6 +11,8 @@ import com.sun.istack.internal.NotNull;
 public class WAVLTree {
     private WAVLNode root;
     private int size;
+    private WAVLNode minNode;
+    private WAVLNode maxNode;
 
     /**
      * public WAVLTree()
@@ -20,6 +22,8 @@ public class WAVLTree {
     public WAVLTree(){
         root = null;
         size = 0;
+        WAVLNode minNode = null;
+        WAVLNode maxNode = null;
     }
 
     /**
@@ -61,10 +65,18 @@ public class WAVLTree {
         WAVLNode newNode = new WAVLNode(k, i);
         if (root == null) {
             root = newNode;
+            minNode = newNode;
+            maxNode = newNode;
             size++;
             return 0;
         }
         WAVLNode node = findInsertionPlace(root, k);
+        if (node == minNode && k < node.getKey()) {
+            minNode = newNode;
+        }
+        if (node == maxNode && k > node.getKey()) {
+            maxNode = newNode;
+        }
         if (node == null) {
             return -1;
         }
@@ -135,12 +147,20 @@ public class WAVLTree {
             return -1;
         }
         WAVLNode node = findKey(root, k);
+        if (k == minNode.getKey()) {
+            minNode = successor(node);
+        }
+        if (k == maxNode.getKey()) {
+            maxNode = predecessor(node);
+        }
         WAVLNode nodeToBalance;
         if (node == null) {
             return -1;
         }
         if (size() == 1) {
             root = null;
+            minNode = null;
+            maxNode = null;
             size--;
             return 0;
         }
@@ -256,12 +276,12 @@ public class WAVLTree {
      * Returns the iמfo of the item with the smallest key in the tree,
      * or null if the tree is empty
      */
-    // Complexity O(logn)
+    // Complexity O(1)
     public String min() {
         if (root == null) {
             return null;
         }
-        return minNode(root).getValue();
+        return minNode.getValue();
     }
 
     /**
@@ -270,12 +290,12 @@ public class WAVLTree {
      * Returns the info of the item with the largest key in the tree,
      * or null if the tree is empty
      */
-    // Complexity O(logn)
+    // Complexity O(1)
     public String max() {
         if (root == null) {
             return null;
         }
-        return maxNode(root).getValue();
+        return maxNode.getValue();
     }
 
     /**
@@ -289,7 +309,7 @@ public class WAVLTree {
         if (root == null) {
             return  new int[0];
         }
-        WAVLNode node = minNode(root);
+        WAVLNode node = minNode;
         int length = size();
         int[] keysArray = new int[length];
         for (int i = 0; i < length; i++){
@@ -311,7 +331,7 @@ public class WAVLTree {
         if (root == null) {
             return new String[0];
         }
-        WAVLNode node = minNode(root);
+        WAVLNode node = minNode;
         int length = size();
         String[] valuesArray = new String[length];
         for (int i = 0; i < length; i++) {
@@ -487,7 +507,11 @@ public class WAVLTree {
             }
         }
         else {
-            return minNode(node.getRight());
+            node = node.getRight();
+            while (node.hasLeftChild()) {
+                node = node.getLeft();
+            }
+            return node;
         }
     }
 
@@ -515,37 +539,11 @@ public class WAVLTree {
             }
         }
         else {
-            return maxNode(node.getLeft());
-        }
-    }
-
-    /**
-     * #pre node != null
-     * #post Returns the smallest node of the subtree beginning in node (i.e The left most node).
-     */
-    // Complexity O(logn)
-    @NotNull
-    private static WAVLNode minNode(@NotNull WAVLNode node) {
-        if (node.getLeft() == null) {
+            node = node.getLeft();
+            while (node.hasRightChild()) {
+                node = node.getRight();
+            }
             return node;
-        }
-        else {
-            return minNode(node.getLeft());
-        }
-    }
-
-    /**
-     * #pre node != null
-     * #post Returns the largest node of the subtree beginning in node (i.e The right most node).
-     */
-    // Complexity O(logn)
-    @NotNull
-    private static WAVLNode maxNode(@NotNull WAVLNode node) {
-        if (node.getRight() == null) {
-            return node;
-        }
-        else {
-            return maxNode(node.getRight());
         }
     }
 
@@ -630,10 +628,10 @@ public class WAVLTree {
     /**
      * #post Returns the deletion case of the node
      *  0   - No further changes should be made.
-     *  1   - Demotion required, left/right.
-     *  2/3 - Double demotion required, left/right.
-     *  4/5 - Rotation required, left/right.
-     *  6/7 - Double rotation required, left/right.
+     *  1   - Demotion required.
+     *  2/3 - Double demotion required.
+     *  4/5 - Rotation required.
+     *  6/7 - Double rotation required.
      */
     // Complexity O(1)
     private static int deletionCase(WAVLNode node) {
