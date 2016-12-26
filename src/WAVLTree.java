@@ -22,8 +22,8 @@ public class WAVLTree {
     public WAVLTree(){
         root = null;
         size = 0;
-        WAVLNode minNode = null;
-        WAVLNode maxNode = null;
+        minNode = null;
+        maxNode = null;
     }
 
     /**
