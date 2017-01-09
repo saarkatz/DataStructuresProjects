@@ -7,6 +7,13 @@ package Fibonacchi;
  */
 public class FibonacciHeap
 {
+    int size;
+    HeapNode min;
+
+    FibonacciHeap() {
+        size = 0;
+        min = null;
+    }
 
    /**
     * public boolean empty()
@@ -97,7 +104,7 @@ public class FibonacciHeap
     */
     public void delete(HeapNode x) 
     {    
-    	return; // should be replaced by student code
+        return; // should be replaced by student code
     }
 
    /**
@@ -147,16 +154,82 @@ public class FibonacciHeap
     	return 0; // should be replaced by student code
     }
     
-   /**
-    * public class HeapNode
-    * 
-    * If you wish to implement classes other than FibonacciHeap
-    * (for example HeapNode), do it in this file, not in 
-    * another file 
-    *  
-    */
+    /**
+     * public class HeapNode
+     *
+     * If you wish to implement classes other than FibonacciHeap
+     * (for example HeapNode), do it in this file, not in
+     * another file
+     *
+     */
     public class HeapNode{
-  	public HeapNode(int key) {
-      }
+        private String value;
+        private int key;
+        private int rank;
+        private boolean mark;
+        private HeapNode child;
+        private HeapNode next;
+        private HeapNode prev;
+        private HeapNode parent;
+
+        public HeapNode(int key, String value) {
+            this.value = value;
+            this.key = key;
+            rank = 0;
+            mark = false;
+            child = null;
+            next = null;
+            prev = null;
+            parent = null;
+        }
+
+        public boolean isMark() {
+            return mark;
+        }
+        public HeapNode getChild() {
+            return child;
+        }
+        public HeapNode getNext() {
+            return next;
+        }
+        public int getKey() {
+            return key;
+        }
+        public int getRank() {
+            return rank;
+        }
+        public HeapNode getParent() {
+            return parent;
+        }
+        public HeapNode getPrev() {
+            return prev;
+        }
+        public String getValue() {
+            return value;
+        }
+        public void setChild(HeapNode child) {
+            this.child = child;
+        }
+        public void setKey(int key) {
+            this.key = key;
+        }
+        public void setMark(boolean mark) {
+            this.mark = mark;
+        }
+        public void setNext(HeapNode next) {
+            this.next = next;
+        }
+        public void setParent(HeapNode parent) {
+            this.parent = parent;
+        }
+        public void setPrev(HeapNode prev) {
+            this.prev = prev;
+        }
+        public void setRank(int rank) {
+            this.rank = rank;
+        }
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }
