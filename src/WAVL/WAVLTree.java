@@ -1,8 +1,8 @@
-// Submitted by Gal Oren (302378633, orengal1) and Katz Saar (318966249, saarkatz)
+package WAVL;// Submitted by Gal Oren (302378633, orengal1) and Katz Saar (318966249, saarkatz)
 
 /**
  *
- * WAVLTree
+ * WAVL.WAVLTreeImpl
  *
  * An implementation of a WAVL Tree with
  * distinct integer keys and info
@@ -15,7 +15,7 @@ public class WAVLTree {
     private WAVLNode maxNode;
 
     /**
-     * public WAVLTree()
+     * public WAVL.WAVLTreeImpl()
      *
      * Constructor
      */
@@ -687,7 +687,7 @@ public class WAVLTree {
     /**
      * public class WAVLNode
      *
-     * If you wish to implement classes other than WAVLTree
+     * If you wish to implement classes other than WAVL.WAVLTreeImpl
      * (for example WAVLNode), do it in this file, not in
      * another file.
      * This is an example which can be deleted if no such classes are necessary.
