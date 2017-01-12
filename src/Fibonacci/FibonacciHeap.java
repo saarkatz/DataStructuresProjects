@@ -186,23 +186,23 @@ public class FibonacciHeap {
      * another file
      *
      */
-    public void cut(HeapNode node) {
-        HeapNode parent = node.getParent();
-        node.setParent(null);
-        node.setMark(false);
+    public void cut(HeapNode x) {
+        HeapNode parent = x.getParent();
+        x.setParent(null);
+        x.setMark(false);
         parent.setRank(parent.getRank() - 1);
-        if (node.next.equals(node)) {
+        if (x.next.equals(x)) {
             parent.setChild(null);
         }
         else {
-            parent.setChild(node.next);
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
+            parent.setChild(x.next);
+            x.prev.next = x.next;
+            x.next.prev = x.prev;
         }
     }
-    public void cascadingCut(HeapNode node) {
-        HeapNode parent = node.getParent();
-        cut(node);
+    public void cascadingCut(HeapNode x) {
+        HeapNode parent = x.getParent();
+        cut(x);
         if (parent.getParent() != null) {
             if (parent.isMark() == false) {
                 parent.setMark(true);
