@@ -1,4 +1,4 @@
-package Fibonacchi;
+package Fibonacci;
 
 /**
  * FibonacciHeap
@@ -6,6 +6,9 @@ package Fibonacchi;
  * An implementation of fibonacci heap over non-negative integers.
  */
 public class FibonacciHeap {
+    static int totalCuts;
+    static int totalLinks;
+
     int size;
     HeapNode min;
 
@@ -23,8 +26,7 @@ public class FibonacciHeap {
     * is empty.
     *   
     */
-    public boolean empty()
-    {
+    public boolean empty() {
     	return size == 0;
     }
 		
@@ -33,8 +35,7 @@ public class FibonacciHeap {
     *
     * Creates a node (of type HeapNode) which contains the given key, and inserts it into the heap. 
     */
-    public HeapNode insert(int key)
-    {    
+    public HeapNode insert(int key) {
     	return null;//new HeapNode(); // should be replaced by student code
     }
 
@@ -52,10 +53,9 @@ public class FibonacciHeap {
     * Return the node of the heap whose key is minimal. 
     *
     */
-    public HeapNode findMin()
-    {
+    public HeapNode findMin() {
     	return min;
-    } 
+    }
     
    /**
     * public void meld (FibonacciHeap heap2)
@@ -63,9 +63,8 @@ public class FibonacciHeap {
     * Meld the heap with heap2
     *
     */
-    public void meld (FibonacciHeap heap2)
-    {
-    	  return; // should be replaced by student code   		
+    public void meld (FibonacciHeap heap2) {
+    	  return; // TODO should be replaced by student code
     }
 
    /**
@@ -74,8 +73,7 @@ public class FibonacciHeap {
     * Return the number of elements in the heap
     *   
     */
-    public int size()
-    {
+    public int size() {
     	return size;
     }
     	
@@ -85,9 +83,8 @@ public class FibonacciHeap {
     * Return a counters array, where the value of the i-th entry is the number of trees of order i in the heap. 
     * 
     */
-    public int[] countersRep()
-    {
-	int[] arr = new int[42];
+    public int[] countersRep() {
+	    int[] arr = new int[42];
         return arr; //	 to be replaced by student code
     }
 	
@@ -137,8 +134,7 @@ public class FibonacciHeap {
     * The function decreases the key of the node x by delta. The structure of the heap should be updated
     * to reflect this chage (for example, the cascading cuts procedure should be applied if needed).
     */
-    public void decreaseKey(HeapNode x, int delta)
-    {    
+    public void decreaseKey(HeapNode x, int delta) {
     	return; // should be replaced by student code
     }
 
@@ -149,8 +145,7 @@ public class FibonacciHeap {
     * Potential = #trees + 2*#marked
     * The potential equals to the number of trees in the heap plus twice the number of marked nodes in the heap. 
     */
-    public int potential() 
-    {    
+    public int potential() {
     	return 0; // should be replaced by student code
     }
 
@@ -162,9 +157,8 @@ public class FibonacciHeap {
     * rank bigger by one, by hanging the tree which has larger value in its root on the tree which has smaller value 
     * in its root.
     */
-    public static int totalLinks()
-    {    
-    	return 0; // should be replaced by student code
+    public static int totalLinks() {
+    	return totalLinks; // should be replaced by student code
     }
 
    /**
@@ -173,9 +167,8 @@ public class FibonacciHeap {
     * This static function returns the total number of cut operations made during the run-time of the program.
     * A cut operation is the operation which diconnects a subtree from its parent (during decreaseKey/delete methods). 
     */
-    public static int totalCuts()
-    {    
-    	return 0; // should be replaced by student code
+    public static int totalCuts() {
+    	return totalCuts; // should be replaced by student code
     }
     
     /**
@@ -186,7 +179,7 @@ public class FibonacciHeap {
      * another file
      *
      */
-    public void cut(HeapNode x) {
+    private void cut(HeapNode x) {
         HeapNode parent = x.getParent();
         x.setParent(null);
         x.setMark(false);
@@ -199,8 +192,9 @@ public class FibonacciHeap {
             x.prev.next = x.next;
             x.next.prev = x.prev;
         }
+        totalCuts++;
     }
-    public void cascadingCut(HeapNode x) {
+    private void cascadingCut(HeapNode x) {
         HeapNode parent = x.getParent();
         cut(x);
         if (parent.getParent() != null) {
@@ -212,6 +206,7 @@ public class FibonacciHeap {
             }
         }
     }
+
     public class HeapNode{
         private String value;
         private int key;
@@ -233,52 +228,52 @@ public class FibonacciHeap {
             parent = null;
         }
 
-        public boolean isMark() {
+        private boolean isMark() {
             return mark;
         }
-        public HeapNode getChild() {
+        private HeapNode getChild() {
             return child;
         }
-        public HeapNode getNext() {
+        private HeapNode getNext() {
             return next;
         }
         public int getKey() {
             return key;
         }
-        public int getRank() {
+        private int getRank() {
             return rank;
         }
-        public HeapNode getParent() {
+        private HeapNode getParent() {
             return parent;
         }
-        public HeapNode getPrev() {
+        private HeapNode getPrev() {
             return prev;
         }
         public String getValue() {
             return value;
         }
-        public void setChild(HeapNode child) {
+        private void setChild(HeapNode child) {
             this.child = child;
         }
-        public void setKey(int key) {
+        private void setKey(int key) {
             this.key = key;
         }
-        public void setMark(boolean mark) {
+        private void setMark(boolean mark) {
             this.mark = mark;
         }
-        public void setNext(HeapNode next) {
+        private void setNext(HeapNode next) {
             this.next = next;
         }
-        public void setParent(HeapNode parent) {
+        private void setParent(HeapNode parent) {
             this.parent = parent;
         }
-        public void setPrev(HeapNode prev) {
+        private void setPrev(HeapNode prev) {
             this.prev = prev;
         }
-        public void setRank(int rank) {
+        private void setRank(int rank) {
             this.rank = rank;
         }
-        public void setValue(String value) {
+        private void setValue(String value) {
             this.value = value;
         }
     }
