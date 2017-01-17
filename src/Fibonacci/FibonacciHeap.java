@@ -1,4 +1,4 @@
-package Fibonacchi;
+package Fibonacci;
 
 /**
  * FibonacciHeap
@@ -191,13 +191,13 @@ public class FibonacciHeap {
         x.setParent(null);
         x.setMark(false);
         parent.setRank(parent.getRank() - 1);
-        if (x.next.equals(x)) {
+        if (x.getNext().equals(x)) {
             parent.setChild(null);
         }
         else {
             parent.setChild(x.next);
-            x.prev.next = x.next;
-            x.next.prev = x.prev;
+            x.getPrev().setNext(x.getNext());
+            x.getNext().setPrev(x.getPrev());
         }
     }
     public void cascadingCut(HeapNode x) {
