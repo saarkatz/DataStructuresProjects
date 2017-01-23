@@ -215,7 +215,7 @@ public class FibonacciHeap {
             numMarks--;
         }
         parent.setRank(parent.getRank() - 1);
-        if (x.getNext().equals(x)) {
+        if (x.getNext() == x) {
             parent.setChild(null);
         }
         else {
