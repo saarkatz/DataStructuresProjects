@@ -99,7 +99,7 @@ public class FibonacciHeap {
             //updating min is required and we know the new min is one of the other roots.
             HeapNode node = x.getNext();
             min = node;
-            while (!x.equals(node)) {
+            while (x != node) {
                 //iterating over the roots and updating the new min.
                 if (node.getKey() < min.getKey()) {
                     min = node;
@@ -111,7 +111,7 @@ public class FibonacciHeap {
         HeapNode node = child.getNext();
         //cascading cuts for all the children of x.
         cascadingCut(child);
-        while (!node.equals(child)) {
+        while (node != child) {
             cascadingCut(node);
             node = node.getNext();
         }
@@ -179,22 +179,22 @@ public class FibonacciHeap {
      * another file
      *
      */
-    private void cut(HeapNode x) {
+    private static void cut(HeapNode x) {
         HeapNode parent = x.getParent();
         x.setParent(null);
         x.setMark(false);
         parent.setRank(parent.getRank() - 1);
-        if (x.getNext().equals(x)) {
+        if (x.getNext() == x) {
             parent.setChild(null);
         }
         else {
-            parent.setChild(x.next);
+            parent.setChild(x.getNext());
             x.getPrev().setNext(x.getNext());
             x.getNext().setPrev(x.getPrev());
         }
         totalCuts++;
     }
-    private void cascadingCut(HeapNode x) {
+    private static void cascadingCut(HeapNode x) {
         HeapNode parent = x.getParent();
         cut(x);
         if (parent.getParent() != null) {
