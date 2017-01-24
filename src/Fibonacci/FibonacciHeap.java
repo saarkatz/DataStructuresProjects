@@ -43,9 +43,14 @@ public class FibonacciHeap {
     public HeapNode insert(int key) {
         HeapNode newNode = new HeapNode(key);
         HeapNode minNode = findMin();
-        meld(newNode, minNode);
-        if (newNode.getKey() < minNode.getKey()) {
-           min = newNode;
+        if (minNode == null) {
+            this.min = newNode;
+        }
+        else {
+            meld(newNode, minNode);
+            if (newNode.getKey() < minNode.getKey()) {
+                this.min = newNode;
+            }
         }
         numRoots++;
         size++;
