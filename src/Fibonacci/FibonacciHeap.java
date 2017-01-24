@@ -416,4 +416,34 @@ public class FibonacciHeap {
             this.value = value;
         }
     }
+
+    public Boolean check(){
+        return checkHeap(this.min);
+    }
+
+    private Boolean checkHeap(HeapNode node){
+        HeapNode x = node;
+        if (x==null)
+            return true;
+
+        if (x.parent == null){
+            do {
+                if (!(checkHeap(x.child)))
+                    return false;
+                x=x.next;
+            } while (x.next != node);
+        }
+
+        else {
+            int parentKey = node.parent.key;
+            do {
+                if (!(x.key >= parentKey && checkHeap(x.child)))
+                    return false;
+                x=x.next;
+            } while (x.next != node);
+        }
+
+        return true;
+    }
+
 }
