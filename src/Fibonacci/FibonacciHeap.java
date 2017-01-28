@@ -287,15 +287,23 @@ public class FibonacciHeap {
         cascadingCutCounting(x, true);
     }
 
+    /**
+     * private HeapNode link(HeapNode node1, HeapNode node2)
+     *
+     * This function sets node1 and node2 relationship as parent and child correspondingly
+     * to the heap structure and returns the node which was set as parent
+     */
     private HeapNode link(HeapNode node1, HeapNode node2) {
         if (node1.getRank() != node2.getRank()) {
             throw new RuntimeException("Attempting to link nodes of different ranks!");
         }
+        // Set node1 as the node with the smaller key (if not already set this way)
         if (node1.getKey() > node2.getKey()) {
             HeapNode temp = node1;
             node1 = node2;
             node2 = temp;
         }
+        // Set node2 as a child of node1
         if (node1.getChild() != null) {
             meld(node1.getChild(), node2);
         }
@@ -305,9 +313,14 @@ public class FibonacciHeap {
         totalLinks++;
         return node1;
     }
-
+    /**
+     * private void onePassSuccessiveLinking()
+     *
+     * This function iterates over all the trees in the heap which contains a root node and melds couples
+     * if they have the same rank. each tree will be melded once or not at all
+     */
     private void onePassSuccessiveLinking() {
-        int arraySize = (int)(1.44 * Math.ceil(Math.log(size())/Math.log(2)) + 1); // ceil(log_2(size))
+        int arraySize = (int)(1.45 * Math.ceil(Math.log(size())/Math.log(2))); // ceil(log_2(size))
         HeapNode node = findMin();
         HeapNode prev;
         HeapNode heapArray[] = new HeapNode[arraySize];
@@ -349,6 +362,11 @@ public class FibonacciHeap {
         }
     }
 
+    /**
+     * private void onePassSuccessiveLinking()
+     *
+     * This function connects first's brothers with second's brothers making them all brothers to each other
+     */
     private void meld(HeapNode first, HeapNode second) {
         first.getPrev().setNext(second);
         second.getPrev().setNext(first);
@@ -357,6 +375,11 @@ public class FibonacciHeap {
         second.setPrev(firstPrev);
     }
 
+    /**
+     * private void removeNodeFromList(HeapNode node)
+     *
+     * This function removes node from the heap assuming it is not defined as a child of some node
+     */
     private void removeNodeFromList(HeapNode node) {
         node.getNext().setPrev(node.getPrev());
         node.getPrev().setNext(node.getNext());
