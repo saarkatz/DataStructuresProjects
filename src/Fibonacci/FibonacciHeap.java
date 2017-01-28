@@ -141,19 +141,23 @@ public class FibonacciHeap {
             numRoots--;
             return;
         }
+        // if x has a parent do cascadingCut on it (without counting cuts)
         if (x.getParent() != null) {
             cascadingCutCounting(x, false);
         }
+        // do cascading cuts for all his children (without counting cuts)
+        // after this process x is a root without children
         while (x.getChild() != null) {
             cutWithoutCounting(x.getChild());
         }
+        // removing x from the heap
         min = x.getNext(); // In case x was min
         removeNodeFromList(x);
         numRoots--;
-
+        // reorganize the heap
         onePassSuccessiveLinking();
 
-        // Find min again.
+        // Find min again
         x = min;
         HeapNode node = min.getNext();
         while (!node.equals(x)) {
@@ -173,9 +177,11 @@ public class FibonacciHeap {
     */
     public void decreaseKey(HeapNode x, int delta) {
     	x.setRank(x.getRank() - delta);
+    	//if x's position is illegal do cascading cut to fix it
         if(x.getParent() != null && x.getKey() < x.getParent().getKey()) {
             cascadingCut(x);
         }
+        // reorganize the heap
         onePassSuccessiveLinking();
     }
 
@@ -212,6 +218,11 @@ public class FibonacciHeap {
     	return totalCuts;
     }
 
+    /**
+     * public void cutWithoutCounting(HeapNode x)
+     *
+     * This function disconnects a subtree from its parent and increases totalCuts
+     */
     private void cutWithoutCounting(HeapNode x) {
         HeapNode parent = x.getParent();
         x.setParent(null);
@@ -231,10 +242,22 @@ public class FibonacciHeap {
         numRoots++;
     }
 
+    /**
+     * public void cutWithoutCounting(HeapNode x)
+     *
+     * This function disconnects a subtree from its parent
+     */
     private void cut(HeapNode x) {
         cutWithoutCounting(x);
         totalCuts++;
     }
+
+    /**
+     * private void cascadingCutCounting(HeapNode x, boolean doCount)
+     *
+     * This function disconnects a subtree from its parent, connects it as its brother
+     * and checks if the new placing is legal. if not - it does the process again recursively
+     */
     private void cascadingCutCounting(HeapNode x, boolean doCount) {
         HeapNode parent = x.getParent();
         if (doCount) {
@@ -253,6 +276,13 @@ public class FibonacciHeap {
             }
         }
     }
+
+    /**
+     * private void cascadingCut(HeapNode x)
+     *
+     * This function disconnects a subtree from its parent, connects it as its brother
+     * and checks if the new placing is legal. if not - it does the process again recursively
+     */
     private void cascadingCut(HeapNode x) {
         cascadingCutCounting(x, true);
     }
