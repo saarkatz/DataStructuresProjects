@@ -64,7 +64,9 @@ public class FibonacciHeap {
     *
     */
     public void deleteMin() {
-        delete(findMin());
+        if (findMin() != null) {
+            delete(findMin());
+        }
     }
 
    /**
@@ -84,14 +86,26 @@ public class FibonacciHeap {
     *
     */
     public void meld (FibonacciHeap heap2) {
+        if (heap2 == null || heap2.empty()) {
+            // If heap2 is empty there is nothing to meld.
+            return;
+        }
         HeapNode minNode2 = heap2.findMin();
         HeapNode minNode = findMin();
-        meld(minNode2, minNode);
+        if (!this.empty()) {
+            meld(minNode2, minNode);
 
-        // Keep all members updated.
-        if (minNode2.getKey() < minNode.getKey()) {
-            min = minNode2;
+            // Keep min updated.
+            if (minNode2.getKey() < minNode.getKey()) {
+                min = minNode2;
+            }
         }
+        else {
+            // If this heap is empty and heap2 isn't then we will move all the content from heap2 to this.
+            // This is to keep the result consistent.
+            this.min = minNode2;
+        }
+
         this.size = this.size() + heap2.size();
         this.numRoots = this.numRoots + heap2.numRoots;
         this.numMarks = this.numMarks + heap2.numMarks;
@@ -120,7 +134,10 @@ public class FibonacciHeap {
     * 
     */
     public int[] countersRep() {
-	    int[] arr = new int[(int)Math.ceil(Math.log(size())/Math.log(2))];
+        if (size() == 0) {
+            return new int[]{0};
+        }
+	    int[] arr = new int[(int)(Math.ceil(Math.log(size())/Math.log(2))) + 1];
         HeapNode node = findMin();
         for (int i = 0; i < numRoots; i++) {
             arr[node.getRank()]++;
@@ -139,10 +156,11 @@ public class FibonacciHeap {
         if (size() == 1) {
             min = null;
             numRoots--;
+            size--;
             return;
         }
         if (x.getParent() != null) {
-            cascadingCutCounting(x, false);
+            cascadingCut(x);
         }
         while (x.getChild() != null) {
             cutWithoutCounting(x.getChild());
@@ -150,19 +168,8 @@ public class FibonacciHeap {
         min = x.getNext(); // In case x was min
         removeNodeFromList(x);
         numRoots--;
-
+        size--;
         onePassSuccessiveLinking();
-
-        // Find min again.
-        x = min;
-        HeapNode node = min.getNext();
-        while (!node.equals(x)) {
-            //iterating over the roots and updating the new min.
-            if (node.getKey() < min.getKey()) {
-                min = node;
-            }
-            node = node.getNext();
-        }
     }
 
    /**
@@ -172,7 +179,7 @@ public class FibonacciHeap {
     * to reflect this chage (for example, the cascading cuts procedure should be applied if needed).
     */
     public void decreaseKey(HeapNode x, int delta) {
-    	x.setRank(x.getRank() - delta);
+    	x.setKey(x.getKey() - delta);
         if(x.getParent() != null && x.getKey() < x.getParent().getKey()) {
             cascadingCut(x);
         }
@@ -277,7 +284,7 @@ public class FibonacciHeap {
     }
 
     private void onePassSuccessiveLinking() {
-        int arraySize = (int)(1.44 * Math.ceil(Math.log(size())/Math.log(2)) + 1); // ceil(log_2(size))
+        int arraySize = (int)(1.45 * Math.ceil(Math.log(size())/Math.log(2))) + 1; // ceil(log_2(size))
         HeapNode node = findMin();
         HeapNode prev;
         HeapNode heapArray[] = new HeapNode[arraySize];
@@ -291,11 +298,12 @@ public class FibonacciHeap {
             }
             // If it is the link it with the existing one one move them to the result
             else {
+                int rank = node.getRank();
                 prev = node;
                 node = node.getNext();
                 removeNodeFromList(prev);
-                removeNodeFromList(heapArray[prev.getRank()]);
-                prev = link(prev, heapArray[prev.getRank()]);
+                removeNodeFromList(heapArray[rank]);
+                prev = link(prev, heapArray[rank]);
 
                 // Add the linked node to the result
                 if (heapOut == null) {
@@ -305,7 +313,7 @@ public class FibonacciHeap {
                     meld(heapOut, prev);
                 }
                 numRoots--;
-                heapArray[node.getRank()] = null;
+                heapArray[rank] = null;
             }
         }
         if (heapOut != null) {
@@ -316,6 +324,17 @@ public class FibonacciHeap {
                 }
             }
             min = heapOut;
+        }
+
+        // Find min again.
+        prev = min;
+        node = min.getNext();
+        while (!node.equals(prev)) {
+            //iterating over the roots and updating the new min.
+            if (node.getKey() < min.getKey()) {
+                min = node;
+            }
+            node = node.getNext();
         }
     }
 
@@ -358,8 +377,8 @@ public class FibonacciHeap {
             rank = 0;
             mark = false;
             child = null;
-            next = null;
-            prev = null;
+            next = this;
+            prev = this;
             parent = null;
         }
 
@@ -415,9 +434,27 @@ public class FibonacciHeap {
         private void setValue(String value) {
             this.value = value;
         }
+
+        @Override
+        public String toString() {
+            HeapNode x = this.getNext();
+            StringBuilder builder = new StringBuilder();
+            builder.append(this.key);
+            int count = 0;
+            while (x != this && count < 1000000) {
+                builder.append(", ");
+                builder.append(x.key);
+                x = x.getNext();
+                count++;
+            }
+            if (count >= 1000000) {
+                throw  new RuntimeException("toString either entered an infinite loop or there are actually 1000000 node in the list!");
+            }
+            return builder.toString();
+        }
     }
 
-    public Boolean check(){
+    Boolean check(){
         return checkHeap(this.min);
     }
 
@@ -430,8 +467,8 @@ public class FibonacciHeap {
             do {
                 if (!(checkHeap(x.child)))
                     return false;
-                x=x.next;
-            } while (x.next != node);
+                x = x.next;
+            } while (x != node);
         }
 
         else {
@@ -439,8 +476,8 @@ public class FibonacciHeap {
             do {
                 if (!(x.key >= parentKey && checkHeap(x.child)))
                     return false;
-                x=x.next;
-            } while (x.next != node);
+                x = x.next;
+            } while (x != node);
         }
 
         return true;
