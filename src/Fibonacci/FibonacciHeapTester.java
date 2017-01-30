@@ -11,7 +11,8 @@ public class FibonacciHeapTester {
         testInsertDeleteMin();
         testInsertDecrease();
         testInsertDelete();
-
+        testRandomSequence();
+        testInsertAndMeld();
     }
 
     private static  void Test1(){
@@ -130,8 +131,109 @@ public class FibonacciHeapTester {
             }
         }
 
+        heap.deleteMin();
+        if (!heap.check()) {
+            System.out.println("err testInsertDelete");
+            return;
+        }
+
         System.out.println("testInsertDelete is fine");
         printDetails(heap);
+    }
+
+    private static void testRandomSequence() {
+        final int sequenceLength = 50000;
+        System.out.println("testRandomSequence" );
+
+        FibonacciHeap heap = new FibonacciHeap();
+        FibonacciHeap.HeapNode[] h = new FibonacciHeap.HeapNode[sequenceLength];
+        int itemsHead = 0;
+        int itemsTail = 0;
+        int randNum;
+
+        int expectedSize = 0;
+
+        for (int i = 0; i < sequenceLength; i++) {
+            if (itemsHead > itemsTail)
+                randNum = new Random().nextInt(5);
+            else
+                randNum = 0;
+
+            switch (randNum) {
+                case 0:
+                case 1:
+                case 2:
+                    h[itemsHead] = heap.insert(new Random().nextInt(sequenceLength/2));
+                    itemsHead++;
+                    expectedSize++;
+                    break;
+                case 3:
+                    heap.delete(h[itemsTail]);
+                    itemsTail++;
+                    expectedSize--;
+                    break;
+                case 4:
+                    heap.decreaseKey(h[itemsTail + new Random().nextInt(itemsHead - itemsTail)], new Random().nextInt(itemsTail + 2));
+                    break;
+            }
+        }
+
+        if (expectedSize != heap.size()) {
+            System.out.println("size err testRandomSequence");
+            return;
+        }
+
+        if (!heap.check()) {
+            System.out.println("check err testRandomSequence");
+            return;
+        }
+
+        System.out.println("testRandomSequence is fine");
+        printDetails(heap);
+    }
+
+    private static void testInsertAndMeld() {
+        final int MaxSize = 30000;
+        System.out.println("testInsertAndMeld" );
+
+        FibonacciHeap heap1 =new FibonacciHeap();
+        int size1 = new Random().nextInt(MaxSize);
+        FibonacciHeap heap2 =new FibonacciHeap();
+        int size2 = new Random().nextInt(MaxSize);
+        int randNum;
+
+        for (int i = 0; i < size1; i++){
+            randNum = new Random().nextInt(MaxSize);
+            heap1.insert(randNum);
+        }
+        for (int i = 0; i < size2; i++){
+            randNum = new Random().nextInt(MaxSize);
+            heap2.insert(randNum);
+        }
+
+        randNum = new Random().nextInt((int)Math.log(MaxSize) + 1);
+        for (int i = 0; i < randNum;i++) {
+            heap1.deleteMin();
+            heap2.deleteMin();
+        }
+
+        heap1.meld(heap2);
+
+        if (!heap1.check()) {
+            System.out.println("heap1 err testInsertAndMeld");
+            return;
+        }
+
+        if (!heap2.check()) {
+            System.out.println("heap2 err testInsertAndMeld");
+            return;
+        }
+
+        System.out.println("testInsertAndMeld is fine");
+        System.out.println("Heap1:");
+        printDetails(heap1);
+        System.out.println("Heap2:");
+        printDetails(heap2);
     }
 
     private static void deleteAndPrint(FibonacciHeap heap){
@@ -141,11 +243,15 @@ public class FibonacciHeapTester {
     }
 
     private static void printDetails(FibonacciHeap heap){
-        System.out.println("size = " + heap.size());
-        System.out.println("countersRep = "+Arrays.toString(heap.countersRep()));
-        System.out.println("check = " + heap.check());
-        System.out.println("potential = " + heap.potential() + "\n");
+        System.out.println(getDetails(heap));
     }
 
-
+    public static String getDetails(FibonacciHeap heap){
+        StringBuilder builder = new StringBuilder();
+        builder.append("size = ").append(heap.size()).append("\n");
+        builder.append("countersRep = ").append(Arrays.toString(heap.countersRep())).append("\n");
+        builder.append("check = ").append(heap.check()).append("\n");
+        builder.append("potential = ").append(heap.potential()).append("\n");
+        return builder.toString();
+    }
 }
