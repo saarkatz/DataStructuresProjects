@@ -160,10 +160,12 @@ public class FibonacciHeap {
             return;
         }
         // if x has a parent do cascadingCut on it (without counting cuts)
+        // We don't count here because totalCuts is defined as the number of cuts invoked by decreaseKey.
+        // We do use cascading cut here to keep the marks of the heap correct.
         if (x.getParent() != null) {
-            cascadingCut(x);
+            cascadingCutCounting(x, false);
         }
-        // do cascading cuts for all his children (without counting cuts)
+        // Cut all x children (without counting)
         // after this process x is a root without children
         while (x.getChild() != null) {
             cutWithoutCounting(x.getChild());
@@ -229,7 +231,7 @@ public class FibonacciHeap {
     /**
      * public void cutWithoutCounting(HeapNode x)
      *
-     * This function disconnects a subtree from its parent and increases totalCuts
+     * This function disconnects a subtree from its parent turning it into a root.
      */
     private void cutWithoutCounting(HeapNode x) {
         HeapNode parent = x.getParent();
@@ -253,7 +255,7 @@ public class FibonacciHeap {
     /**
      * public void cutWithoutCounting(HeapNode x)
      *
-     * This function disconnects a subtree from its parent
+     * This function disconnects a subtree from its parent and increases totalCuts.
      */
     private void cut(HeapNode x) {
         cutWithoutCounting(x);
@@ -263,8 +265,9 @@ public class FibonacciHeap {
     /**
      * private void cascadingCutCounting(HeapNode x, boolean doCount)
      *
-     * This function disconnects a subtree from its parent, connects it as its brother
-     * and checks if the new placing is legal. if not - it does the process again recursively
+     * This function disconnects a subtree from its parent, turns it to a root.
+     * going up to its parent recursively. If doCount == true all the cuts would be counted,
+     * otherwise they wont.
      */
     private void cascadingCutCounting(HeapNode x, boolean doCount) {
         HeapNode parent = x.getParent();
@@ -288,8 +291,8 @@ public class FibonacciHeap {
     /**
      * private void cascadingCut(HeapNode x)
      *
-     * This function disconnects a subtree from its parent, connects it as its brother
-     * and checks if the new placing is legal. if not - it does the process again recursively
+     * This function disconnects a subtree from its parent, turns it to a root.
+     * going up to its parent recursively, counting all cuts along the way.
      */
     private void cascadingCut(HeapNode x) {
         cascadingCutCounting(x, true);
@@ -299,7 +302,7 @@ public class FibonacciHeap {
      * private HeapNode link(HeapNode node1, HeapNode node2)
      *
      * This function sets node1 and node2 relationship as parent and child correspondingly
-     * to the heap structure and returns the node which was set as parent
+     * to the heap structure and returns the node which was set as parent.
      */
     private HeapNode link(HeapNode node1, HeapNode node2) {
         if (node1.getRank() != node2.getRank()) {
@@ -324,8 +327,8 @@ public class FibonacciHeap {
     /**
      * private void onePassSuccessiveLinking()
      *
-     * This function iterates over all the trees in the heap which contains a root node and melds couples
-     * if they have the same rank. each tree will be melded once or not at all
+     * This function iterates over all the roots in the heap and melds couples
+     * if they have the same rank. each tree will be melded once or not at all.
      */
     private void onePassSuccessiveLinking() {
         int arraySize = (int)(1.45 * Math.ceil(Math.log(size())/Math.log(2))) + 1; // ceil(log_2(size))
@@ -385,7 +388,7 @@ public class FibonacciHeap {
     /**
      * private void onePassSuccessiveLinking()
      *
-     * This function connects first's brothers with second's brothers making them all brothers to each other
+     * This function connects first's brothers with second's brothers making them all brothers to each other.
      */
     private void meld(HeapNode first, HeapNode second) {
         first.getPrev().setNext(second);
@@ -398,7 +401,7 @@ public class FibonacciHeap {
     /**
      * private void removeNodeFromList(HeapNode node)
      *
-     * This function removes node from the heap assuming it is not defined as a child of some node
+     * This function removes node it's list of neighbors.
      */
     private void removeNodeFromList(HeapNode node) {
         node.getNext().setPrev(node.getPrev());
