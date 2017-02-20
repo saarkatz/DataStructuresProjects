@@ -191,8 +191,10 @@ public class FibonacciHeap {
         if(x.getParent() != null && x.getKey() < x.getParent().getKey()) {
             cascadingCut(x);
         }
-        // reorganize the heap
-        onePassSuccessiveLinking();
+
+        if (x.getKey() < min.getKey()) {
+            this.min = x;
+        }
     }
 
    /**
